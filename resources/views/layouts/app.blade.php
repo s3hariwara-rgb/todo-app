@@ -9,8 +9,8 @@
 <body>
     <header class="site-header">
         <div class="container inner">
-            <a href="/tasks">Todoアプリ</a>
-            <span class="sub">Laravel ハンズオン</span>
+            <a href="{{ route('tasks.index') }}">Todoアプリ</a>
+            <span class="sub">Laravel ハンズオンはり</span>
         </div>
     </header>
 
@@ -21,7 +21,7 @@
     </main>
 
     <footer class="site-footer">
-        <div class="container inner">Todoアプリ はりわらそうし</div>
+        <div class="container inner">Todoアプリはり</div>
     </footer>
 </body>
 </html>
