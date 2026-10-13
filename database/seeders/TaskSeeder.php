@@ -20,6 +20,7 @@ class TaskSeeder extends Seeder
             '洗濯物をたたむ',
             'Laravelの課題を進める',
             '部屋を掃除する',
+            '帰る',
         ];
 
         foreach ($names as $name) {
