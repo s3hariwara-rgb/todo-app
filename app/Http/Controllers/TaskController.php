@@ -7,6 +7,15 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    private array $rules = [
+        'name' => 'required|max:100',
+    ];
+
+    private array $messages = [
+        'name.required' => 'タスク名を入力してください。',
+        'name.max'      => 'タスク名は100文字以内で入力してください。',
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +23,10 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::orderBy('created_at', 'asc')->get();
+        $tasks = Task::where('status', false)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
 
         return view('tasks.index', compact('tasks'));
     }
@@ -37,14 +49,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:100'
-            ,
-        ], [
-            'name.required' => 'タスク名を入力してください。',
-            'name.max'      => 'タスク名は100文字以内で入力してください。',
-            'min:3'         =>'タスク名は3文字以上で入力してください。'
-        ]);
+        $validated = $request->validate($this->rules, $this->messages);
 
         Task::create([
             'name'   => $request->input('name'),
@@ -73,7 +78,9 @@ class TaskController extends Controller
      */
     public function edit($id)
     {
-        //
+        $task = Task::findOrFail($id);
+
+        return view('tasks.edit', compact('task'));
     }
 
     /**
@@ -85,7 +92,13 @@ class TaskController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate($this->rules, $this->messages);
+
+        $task = Task::findOrFail($id);
+        $task->name = $validated['name'];
+        $task->save();
+
+        return redirect()->route('tasks.index');
     }
 
     /**
@@ -96,6 +109,30 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
+    }
+
+        /**
+     * PATCH /tasks/{id}/complete  完了にする
+     */
+    public function complete($id)
+    {
+
+        $task = Task::findOrFail($id);
+        $task->status = true;
+        $task->save();
+
+        return redirect()->route('tasks.index');
+    }
+
+    public function undo($id)
+    {
+        $task = Task::findOrFail($id);
+        $task->status = false;
+        $task->save();
+
+        return redirect()
+            ->route('tasks.index')
+            ->with('message', 'タスクを未完了に戻しました。');
     }
 }
