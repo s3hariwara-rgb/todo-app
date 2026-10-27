@@ -16,6 +16,11 @@
 
     <main>
         <div class="container">
+            {{-- 直前の処理からのお知らせ（フラッシュメッセージ） --}}
+            @if (session('message'))
+                <p class="alert-{{ session('type', 'success') }}">{{ session('message') }}</p>
+            @endif
+
             @yield('content')
         </div>
     </main>

@@ -27,10 +27,12 @@ class TaskController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $doneTasks = Task::where('status', true)
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
-        return view('tasks.index', compact('tasks'));
+        return view('tasks.index', compact('tasks', 'doneTasks'));
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -56,7 +58,9 @@ class TaskController extends Controller
             'status' => false,
         ]);
 
-        return redirect()->route('tasks.index');
+        return redirect()
+        ->route('tasks.index')
+        ->with('message', 'タスクを追加しました。');
     }
 
     /**
@@ -98,7 +102,9 @@ class TaskController extends Controller
         $task->name = $validated['name'];
         $task->save();
 
-        return redirect()->route('tasks.index');
+        return redirect()
+        ->route('tasks.index')
+        ->with('message', 'タスクを更新しました。');
     }
 
     /**
@@ -109,7 +115,13 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        
+        $task = Task::findOrFail($id);
+        $task->delete();
+
+        return redirect()
+        ->route('tasks.index')
+        ->with('message', 'タスクを削除しました。')
+        ->with('type','danger');
     }
 
         /**
@@ -122,7 +134,9 @@ class TaskController extends Controller
         $task->status = true;
         $task->save();
 
-        return redirect()->route('tasks.index');
+        return redirect()
+        ->route('tasks.index')
+        ->with('message', 'タスクを完了にしました。');
     }
 
     public function undo($id)

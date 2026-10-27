@@ -21,6 +21,9 @@
 
     <p class="muted">登録件数：{{ $tasks->count() }} 件</p>
 
+@if ($tasks->isEmpty())
+        <p class="empty">未完了のタスクはありません。</p>
+    @else
     <table>
         <thead>
             <tr>
@@ -43,9 +46,40 @@
                         </form>
 
                         <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-accent btn-sm">編集</a>
+
+                        <form action="{{ route('tasks.destroy', $task->id) }}" method="post"
+                              onsubmit="return confirm('「{{ $task->name }}」を削除します。よろしいですか？');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-danger btn-sm">削除</button>
+                        </form>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+@endif    
+
+    {{-- 完了済みタスク一覧 --}}
+    @if ($doneTasks->isNotEmpty())
+        <h2 class="page-title" style="margin-top: 48px;">完了したタスク</h2>
+        <table>
+            <tbody>
+                @foreach ($doneTasks as $task)
+                    <tr>
+                        <td class="done">{{ $task->name }}</td>
+                        <td class="actions">
+                            <form action="{{ route('tasks.destroy', $task->id) }}" method="post"
+                                  onsubmit="return confirm('本当に削除しますか？');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-danger btn-sm">削除</button>
+                                <button type="submit" class="btn-danger btn-sm">未完了に戻す</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 @endsection
